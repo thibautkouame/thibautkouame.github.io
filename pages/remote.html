@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bouton pour lancer un fichier</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="header">
+      <div class="time-location">
+        <i class="fa fa-calendar" aria-hidden="true"></i>
+        <p id="currentDateTime"></p>
+        <i class="fa fa-globe" aria-hidden="true"></i>
+        <p id="currentLocation"></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1>Thibaut Kouamé online<br />files transfer</h1>
+      <button id="launchButton">
+        <i class="fa fa-download" aria-hidden="true"></i> Lancer un
+        téléchargement
+      </button>
+      <h5>
+        fichier disponible :
+        <u style="color: rgb(122, 122, 122)">app-release.apk</u> VEONE
+      </h5>
+    </div>
+
+    <!-- Script pour lancer le fichier et afficher l'heure -->
+    <script>
+      document
+        .getElementById("launchButton")
+        .addEventListener("click", function () {
+          // Code pour lancer le fichier ici
+          // Par exemple, vous pouvez utiliser JavaScript pour déclencher le téléchargement d'un fichier
+          window.location.href = "../assets/files/app-release.apk";
+        });
+      // Fonction pour mettre à jour l'heure et la date en temps réel
+      function updateDateTime() {
+        const currentDateTime = new Date();
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          timeZoneName: "short",
+        };
+        const formattedDateTime = currentDateTime.toLocaleDateString(
+          "fr-FR",
+          options
+        );
+        document.getElementById("currentDateTime").textContent =
+          formattedDateTime;
+      }
+
+      // Fonction pour obtenir et afficher la localisation actuelle
+      function updateLocation() {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                const location = data.city
+                  ? `${data.city}, ${data.countryName}`
+                  : `${data.locality}, ${data.countryName}`;
+                document.getElementById(
+                  "currentLocation"
+                ).textContent = `Localisation actuelle : ${location}`;
+              })
+              .catch((error) => {
+                console.error(
+                  "Erreur lors de la récupération de la localisation :",
+                  error
+                );
+              });
+          },
+          (error) => {
+            console.error(
+              "Erreur lors de la récupération de la localisation :",
+              error
+            );
+          }
+        );
+      }
+
+      // Appel des fonctions pour mettre à jour l'heure et la localisation au chargement de la page
+      updateDateTime();
+      updateLocation();
+
+      // Mise à jour de l'heure chaque seconde
+      setInterval(updateDateTime, 1000);
+    </script>
+  </body>
+</html>
